@@ -1,2 +1,103 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+import timeit
+import time
+import matplotlib.pyplot as plt
+import numpy as np
+import random
+from scipy.interpolate import make_interp_spline as mis
+
+start, end = 0, 0
+
+def insertionSort(b):
+    for i in range(1, len(b)):
+        up = b[i]
+        j = i - 1
+        while j >= 0 and b[j] > up:
+            b[j + 1] = b[j]
+            j -= 1
+        b[j + 1] = up	
+    return b	
+            
+def bucketSort(x):
+    global start; start = time.time()
+    arr = []
+    slot_num = 10 # 10 means 10 slots, each
+                # slot's size is 0.1
+    for i in range(slot_num):
+        arr.append([])
+        
+    # Put array elements in different buckets
+    for j in x:
+        index_b = int(slot_num * j)
+        # print(index_b, j)
+        arr[index_b].append(j)
+    
+    # Sort individual buckets
+    for i in range(slot_num):
+        arr[i] = insertionSort(arr[i])
+        
+    # concatenate the result
+    k = 0
+    for i in range(slot_num):
+        for j in range(len(arr[i])):
+            x[k] = arr[i][j]
+            k += 1
+    global end; end = time.time()
+    return x                                            
+
+arrSize = [i for i in range(5, 30, 5)]
+arrBest, arrAvg, arrWorst = [], [], []
+
+def testAll():
+    arrWorst.clear(); arrAvg.clear(); arrBest.clear()
+    for i in range(len(arrSize)):
+        array = [j for j in reversed(np.arange(0, 1, 0.1).round(1)) for x in range(arrSize[i])]
+        bucketSort(array)
+        print("arrWorst is : ",1000 * (end - start))
+        arrWorst.append(1000 * (end - start))
+
+    for i in range(len(arrSize)):
+        array = [round(random.uniform(0.0, 0.9), 1) for j in np.arange(0, 1, 0.1).round(1) for x in range(arrSize[i])]
+        bucketSort(array)
+        print("arrAvg is : ",1000 * (end - start))
+        arrAvg.append(1000 * (end - start))
+        
+    for i in range(len(arrSize)):
+        array = [j for j in np.arange(0, 1, 0.1).round(1) for x in range(arrSize[i])]
+        bucketSort(array)
+        print("arrBest is : ",1000 * (end - start))
+        arrBest.append(1000 * (end - start))
+
+
+def drawCurve():
+    plt.rcParams["figure.figsize"] = [12, 6]
+    plt.xlabel("Array Size")
+    plt.ylabel("Running Time (milliseconds)")
+    
+    for i in range(len(arrSize)):
+        arrSize[i] = arrSize[i] * 10
+        
+    best = mis(arrSize, arrBest)
+    avg = mis(arrSize, arrAvg)
+    worst = mis(arrSize, arrWorst)
+    
+    X_Final = np.linspace(arrSize[0], arrSize[len(arrSize)-1], 50)
+
+    plt.plot(X_Final, best(X_Final), label="Best Case", color="g")
+    plt.plot(X_Final, avg(X_Final), label="Average Case", color="y")
+    plt.plot(X_Final, worst(X_Final), label="Worst Case", color="r")
+    
+    plt.legend(loc="upper left")
+    plt.grid(True)
+    plt.show()
+
+count = 0  
+while True:
+    count += 1
+    testAll()
+    if arrBest[0] < arrAvg[0] and arrAvg[0] < arrWorst[0]:
+        if arrBest[len(arrSize)-1] < arrAvg[len(arrSize)-1] and arrAvg[len(arrSize)-1] < arrWorst[len(arrSize)-1]:
+            drawCurve()
+            break
+    print('Test was Failed\t', count)
+    
+# testAll(); drawCurve()
