@@ -49,24 +49,33 @@ arrBest, arrAvg, arrWorst = [], [], []
 
 def testAll():
     arrWorst.clear(); arrAvg.clear(); arrBest.clear()
+    
+    print("\nWorst-Case Scenarios \n\n")
     for i in range(len(arrSize)):
         array = [j for j in reversed(np.arange(0, 1, 0.1).round(1)) for x in range(arrSize[i])]
         bucketSort(array)
-        print("arrWorst is : ",1000 * (end - start))
         arrWorst.append(1000 * (end - start))
-
-    for i in range(len(arrSize)):
-        array = [round(random.uniform(0.0, 0.9), 1) for j in np.arange(0, 1, 0.1).round(1) for x in range(arrSize[i])]
-        bucketSort(array)
-        print("arrAvg is : ",1000 * (end - start))
-        arrAvg.append(1000 * (end - start))
+        print("Scenarios %d" % (i+1))
+        print("Array Size %d" % (len(array)))
+        print("Running Time: %.5f milliseconds \n" % (1000 * (end - start)))
         
+    print("\nAverage-Case Scenarios \n\n")
+    for i in range(len(arrSize)):
+        array = [round(random.uniform(0.0, 0.9), 1) for j in np.arange(0, arrSize[i], 0.1)]
+        bucketSort(array)
+        arrAvg.append(1000 * (end - start))
+        print("Scenarios %d" % (i+1))
+        print("Array Size %d" % (len(array)))
+        print("Running Time: %.5f milliseconds \n" % (1000 * (end - start)))
+    
+    print("\nBest-Case Scenarios \n\n")
     for i in range(len(arrSize)):
         array = [j for j in np.arange(0, 1, 0.1).round(1) for x in range(arrSize[i])]
         bucketSort(array)
-        print("arrBest is : ",1000 * (end - start))
         arrBest.append(1000 * (end - start))
-
+        print("Scenarios %d" % (i+1))
+        print("Array Size %d" % (len(array)))
+        print("Running Time: %.5f milliseconds \n" % (1000 * (end - start)))
 
 def drawCurve():
     plt.rcParams["figure.figsize"] = [12, 6]
